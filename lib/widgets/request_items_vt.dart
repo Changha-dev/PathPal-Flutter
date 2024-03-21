@@ -40,6 +40,15 @@ class _RequestItemsState extends State<VtRequestItems> {
             return Center(
                 child: CircularProgressIndicator()); // 데이터가 로딩 중일 때 보여줄 위젯
           }
+
+          int totalServiceTime = 0; // 총 봉사 시간을 저장할 변수
+
+          // 각 문서의 service_time을 합산
+          for (var doc in snapshot.data!.docs) {
+            int serviceTime = doc['service_time'] ?? 0; // service_time 필드가 없는 경우 0으로 처리
+            totalServiceTime += serviceTime;
+          }
+
           return ListView.builder(
             itemCount: snapshot.data?.docs.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
