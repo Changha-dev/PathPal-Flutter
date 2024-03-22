@@ -94,6 +94,8 @@ flutter:
     - assets/images/walk-image.png
     - assets/images/left-arrow-icon.png
     - assets/images/cancel-icon.png
+    - assets/images/cht-bck.png
+    - assets/images/pathpal-logo.png
     - .env
   fonts:
     - family: login
