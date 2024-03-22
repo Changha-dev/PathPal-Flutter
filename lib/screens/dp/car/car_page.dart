@@ -16,6 +16,7 @@ import 'package:pathpal/service/firestore/car_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CarPage extends StatefulWidget {
   const CarPage({super.key});
@@ -44,7 +45,10 @@ class _CarPage extends State<CarPage> {
   @override
   void initState() {
     super.initState();
-    print("initState");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      flutterDialog();
+    });
+    // flutterDialog();
     if (departureLatLng != null && destinationLatLng != null) {
       setState(() {
         _center = departureLatLng;
@@ -56,6 +60,62 @@ class _CarPage extends State<CarPage> {
         CarServiceState().departureTime ?? DateTime.now();
   }
 
+   void flutterDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Dialog를 제외한 다른 화면 터치를 막음
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(10.0)), // Dialog 화면 모서리 둥글게 조절
+          title: Text("잠깐! 전동 휠체어를 이용하시나요?"),
+          content: SingleChildScrollView(
+            // 내용이 길 경우 스크롤 가능하도록 설정
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  "안녕하세요, PathPal을 이용해 주셔서 감사합니다. 🌟\n\n"
+                  "우리 서비스는 민간 자원봉사자들의 차량을 이용한 교통 지원 서비스를 제공하고 있습니다. "
+                  "하지만 아쉽게도 현재 제공되는 차량으로는 전동휠체어의 탑승이 어려운 점 양해 부탁드립니다.\n\n"
+                  "전동휠체어를 사용하시는 경우, 보다 안전하고 편리한 이동을 위해 '장애인 콜택시' 서비스 이용을 권장드립니다. "
+                  "장애인 콜택시는 전동휠체어 탑승이 가능하도록 특별히 설계된 차량을 제공하여, 여러분의 이동을 도와드립니다.\n\n"
+                  "장애인 콜택시 이용 방법 안내:",
+                ),
+                 GestureDetector(
+                    onTap: () {
+                      _launchURL('https://www.sndcc.org/mobile/main/contents.do?menuNo=300035');
+                    },
+                    child: Text(
+                      "https://www.sndcc.org/mobile/main/contents.do?menuNo=300035",
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                    ),
+                ),
+                Text(
+                    "\n저희 PathPal은 앞으로도 더 많은 분들이 편리하게 이동할 수 있도록 서비스 개선에 최선을 다하겠습니다. 불편을 드려 죄송합니다. 🙏"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("확인"),
+              onPressed: () {
+                Navigator.pop(context); // 대화 상자를 닫음
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _launchURL(String url) async {
+     if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
   Future<void> _onMapCreated(LatLng departure, LatLng destination) async {
     final markers = await mapService.createMarkers(departure, destination);
     final currentLocation = await mapService.getCurrentLocation();
