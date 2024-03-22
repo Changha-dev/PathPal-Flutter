@@ -28,6 +28,8 @@ class _ProgressState extends State<Progress> {
         return 1;
       case 'boarding':
         return 2;
+      case 'arriving':
+        return 3;
       default:
         return -1;
     }
@@ -82,8 +84,8 @@ class _ProgressState extends State<Progress> {
               if (data['status'] != 'waiting') {
                 vtTime = data['volunteer_time'].toDate();
               }
-              final carSteps = ['접수완료 및 수락 대기 ', '수락완료', '탑승완료'];
-              final walkSteps = ['접수완료 및 수락 대기 ', '수락완료', '미팅완료'];
+              final carSteps = ['접수완료 및 수락 대기 ', '수락완료', '이동중', '도착완료'];
+              final walkSteps = ['접수완료 및 수락 대기 ', '수락완료','이동중', '미팅완료'];
               return Column(
                 children: [
                   SizedBox(
@@ -99,7 +101,7 @@ class _ProgressState extends State<Progress> {
                         height: 30,
                       ),
                       //신청 취소 or 신청 확정 버튼
-                      data['status'] != 'boarding'
+                      data['status'] == 'waiting'|| data['status'] == 'going'
                           ? CancelButton(
                               title: "신청 취소하기",
                               onPressed: () {
@@ -135,14 +137,15 @@ class _ProgressState extends State<Progress> {
                               category: widget.category)
                           : Container(),
 
-                      //status가 boarding일 때 리뷰작성 폼 표시
-                      data['status'] == 'boarding'
+                      //status가 arriving일 때 리뷰작성 폼 표시
+                      data['status'] == 'arriving'
                           ? ReviewForm(
                               dpUid: data['dp_uid'],
                               vtUid: data['vt_uid'],
                               reqId: widget.docId,
                               category: widget.category)
                           : Container()
+                      
                     ],
                   )),
                 ],
