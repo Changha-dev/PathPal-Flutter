@@ -289,7 +289,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Stack(
                 children: [
                   Image.asset(
-                    'assets/cht-bck.png', // 흰색 배경 이미지 경로에 맞게 수정
+                    'assets/images/cht-bck.png', // 흰색 배경 이미지 경로에 맞게 수정
                     fit: BoxFit.cover,
                     width: double.infinity,
                     height: double.infinity,

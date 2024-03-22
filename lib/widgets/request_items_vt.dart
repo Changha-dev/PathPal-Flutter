@@ -27,6 +27,19 @@ class _RequestItemsState extends State<VtRequestItems> {
 
   //디버그용
   // final vtUid = "vX4hHeFUvBPJJ03p6vFP9ItEsdy1";
+  int getServiceTime(DocumentSnapshot doc) {
+    try {
+      // 'service_time' 필드가 존재한다면 해당 값을 반환합니다.
+      // 존재하지 않을 경우, 아래의 catch 블록으로 이동합니다.
+      int serviceTime = doc['service_time'];
+      return serviceTime;
+    } catch (e) {
+      // 'service_time' 필드가 존재하지 않을 경우 여기서 처리합니다.
+      // 예를 들어, 기본값으로 0을 반환할 수 있습니다.
+      return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -41,24 +54,18 @@ class _RequestItemsState extends State<VtRequestItems> {
                 child: CircularProgressIndicator()); // 데이터가 로딩 중일 때 보여줄 위젯
           }
 
-          int totalServiceTime = 0; // 총 봉사 시간을 저장할 변수
-
-          // 각 문서의 service_time을 합산
-          for (var doc in snapshot.data!.docs) {
-            int serviceTime = doc['service_time'] ?? 0; // service_time 필드가 없는 경우 0으로 처리
-            totalServiceTime += serviceTime;
-          }
-
           return ListView.builder(
             itemCount: snapshot.data?.docs.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
               DocumentSnapshot item = snapshot.data!.docs[index];
               print(item['status']);
 
-              var serviceTime = 0;
-              if (item['service_time'] != null) {
-                serviceTime = item['service_time'];
-              }
+              var serviceTime = getServiceTime(item);
+              // if (item['service_time'] != null) {
+              //   serviceTime = item['service_time'];
+              // }else{
+              //   serviceTime = 0;
+              // }
 
               Map<String, String> statusCarMap = {
                 'waiting': "접수완료 및 수락대기",

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pathpal/colors.dart';
 import 'package:pathpal/theme.dart';
-import 'package:pathpal/widgets/request_items.dart';
 import 'package:pathpal/widgets/request_items_vt.dart';
 
 class VtRequests extends StatefulWidget {
@@ -28,9 +27,12 @@ class _RequestsState extends State<VtRequests> {
 
   void calculateTotalServiceTime() async {
     final uid = FirebaseAuth.instance.currentUser!.uid; // 현재 사용자 ID
+    if (uid == null) {
+      print("No user logged in");
+      return;
+    }
     final category = buttonState == 0 ? "cars" : "walks"; // 현재 선택된 카테고리
     int total = 0; // 봉사 시간 합계를 저장할 임시 변수
-    print("uid: $uid");
 
     // Firestore에서 문서 가져오기 및 합계 계산
     final querySnapshot = await FirebaseFirestore.instance
