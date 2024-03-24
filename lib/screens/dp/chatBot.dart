@@ -289,25 +289,26 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      _response,
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
                   if (_response.isNotEmpty) // Response가 비어있지 않을 때만 이미지 표시
                     Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
+                      padding: const EdgeInsets.only(right: 8.0),
                       child: Image.asset(
                         'assets/images/pathpal-logo.png', // 이미지 경로에 맞게 수정해야 합니다.
                         width: 50,
                         height: 50,
                       ),
                     ),
+                  Expanded(
+                    child: Text(
+                      _response,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
+
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(
