@@ -289,7 +289,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (_response.isNotEmpty) // 채팅 내용이 있을 때만 이미지와 텍스트를 표시합니다.
+
+                  if (_response.isNotEmpty) // Response가 비어있지 않을 때만 이미지 표시
                     Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Image.asset(
@@ -320,10 +321,17 @@ class _ChatBotPageState extends State<ChatBotPage> {
                         ),
                       ),
                     ),
+                  Expanded(
+                    child: Text(
+                      _response,
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
+
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextField(
