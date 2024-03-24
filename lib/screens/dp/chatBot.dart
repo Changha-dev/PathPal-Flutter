@@ -289,19 +289,35 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      _response,
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                  ),
-                  if (_response.isNotEmpty) // Response가 비어있지 않을 때만 이미지 표시
+                  if (_response.isNotEmpty) // 채팅 내용이 있을 때만 이미지와 텍스트를 표시합니다.
                     Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
+                      padding: const EdgeInsets.only(right: 8.0),
                       child: Image.asset(
-                        'assets/images/pathpal-logo.png', // 이미지 경로에 맞게 수정해야 합니다.
+                        'assets/images/pathpal-logo.png',
                         width: 50,
                         height: 50,
+                      ),
+                    ),
+                  if (_response.isNotEmpty) // 채팅 내용이 있을 때만 말풍선을 표시합니다.
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          _response,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
                       ),
                     ),
                 ],
@@ -316,14 +332,15 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 hintText: '근처에 편의시설을 물어보세요',
                 suffixIcon: IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: _getResponse, // 사용자가 '보내기' 버튼을 누를 때 호출될 메소드
+                  onPressed: _getResponse,
                 ),
               ),
-              onSubmitted: (value) => _getResponse(), // 키보드에서 '완료'를 누를 때 호출될 메소드
+              onSubmitted: (value) => _getResponse(),
             ),
           ),
         ],
       ),
     );
   }
+
 }
