@@ -131,11 +131,40 @@ class _RequestsState extends State<VtRequests> {
               ),
               Container(
                 width: double.infinity, // 컨테이너를 화면 너비만큼 확장
-                padding: EdgeInsets.fromLTRB(20, 10, 0, 10), // 왼쪽에 10만큼 여백 추가
-                child: Text(
-                  "총 봉사시간: ${totalServiceTime}분", // 봉사 시간 총합을 표시
-                  style: appTextTheme().titleMedium, // 글자 크기 키우고 색상 설정
-                  textAlign: TextAlign.left, // 텍스트 왼쪽 정렬
+                padding: EdgeInsets.fromLTRB(15, 5, 15, 5), // 양쪽에 15, 위아래에 10의 패딩 추가
+                decoration: BoxDecoration(
+                  color: Colors.white, // 배경을 흰색으로 설정
+                  border: Border(
+                    top: BorderSide(color: Colors.grey.shade300), // 상단에 회색 테두리선 추가
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "총 봉사시간: ${totalServiceTime}분", // 봉사 시간 총합을 표시
+                      style: appTextTheme().titleMedium, // 글자 크기 키우고 색상 설정
+                      textAlign: TextAlign.left, // 텍스트 왼쪽 정렬
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // 적립하기 버튼의 액션
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Color(0xFFBFC6FA), // 버튼 배경색
+                        padding: EdgeInsets.symmetric(horizontal: 10), // 버튼 내부 패딩 조절
+                        shape: RoundedRectangleBorder( // 버튼 모양 설정
+                          borderRadius: BorderRadius.circular(5), // 버튼의 border radius 설정
+                        ),
+                        fixedSize: Size(80, 20), // 버튼의 크기 설정
+                      ),
+                      child: Text(
+                        "적립하기",
+                        style: TextStyle(fontSize: 14), // 버튼의 글자 크기 설정
+                      ),
+                    ),
+                  ],
                 ),
               )
             ])

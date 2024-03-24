@@ -13,7 +13,6 @@ import 'package:pathpal/widgets/dp_info.dart';
 import 'package:pathpal/widgets/next_button.dart';
 import 'package:pathpal/widgets/progress_app_bar.dart';
 import 'package:pathpal/widgets/stepper.dart';
-import 'package:provider/provider.dart';
 
 import '../../colors.dart';
 import '../../widgets/custom_dialog.dart';
