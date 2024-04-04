@@ -1,4 +1,4 @@
-# 2024 Hackathon to solve social problems [PATHPAL]
+# 2024 Hackathon to solve social problems - PathPal Team
 <img width="1226" alt="pathpal" src="https://github.com/GDSC-TEAM-1-PathPal/.github/assets/68684425/b9c7229f-c69a-4dfc-a7bd-5499e6766dc1">
 
 ## 📢 Introduction
