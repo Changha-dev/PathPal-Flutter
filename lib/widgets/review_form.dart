@@ -92,49 +92,51 @@ class _ReviewFormState extends State<ReviewForm> {
                     child: Container(
                         color: Colors.white,
                         padding: EdgeInsets.all(20),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //프로필 이미지
-                             SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: ClipOval(
-                                  child: BuildImage.buildProfileImage(
-                                      vtData['profileUrl']),
-                                ),
-                              ),
-                              Text('${vtData['name']}봉사자와의 이동은 어떠셨나요?'),
-                              //별점
-                              RatingBar.builder(
-                                initialRating: 0,
-                                minRating: 1,
-                                direction: Axis.horizontal,
-                                allowHalfRating: true,
-                                itemCount: 5,
-                                itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                                onRatingUpdate: (rating) {
-                                  setState(() {
-                                    _rating = rating;
-                                  });
-                                },
-                              ),
-                              //TextField
-                              TextField(
-                                controller: _reviewController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        child: SingleChildScrollView(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //프로필 이미지
+                               SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: ClipOval(
+                                    child: BuildImage.buildProfileImage(
+                                        vtData['profileUrl']),
                                   ),
-                                 contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 10)
                                 ),
-                              ),
-                            ]),
+                                Text('${vtData['name']}봉사자와의 이동은 어떠셨나요?'),
+                                //별점
+                                RatingBar.builder(
+                                  initialRating: 0,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    setState(() {
+                                      _rating = rating;
+                                    });
+                                  },
+                                ),
+                                //TextField
+                                TextField(
+                                  controller: _reviewController,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                    ),
+                                   contentPadding: EdgeInsets.symmetric(vertical: 40, horizontal: 10)
+                                  ),
+                                ),
+                              ]),
+                        ),
                   
                 )
               );

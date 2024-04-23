@@ -14,7 +14,8 @@ class VtReview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("리뷰 내역"),
+        title: Text("리뷰 내역", style: appTextTheme().titleMedium,),
+        centerTitle: true,
       ),
       body: Column(
         children: [

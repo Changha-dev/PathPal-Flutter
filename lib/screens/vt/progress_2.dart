@@ -14,7 +14,9 @@ class _VtProgress2State extends State<VtProgress2> {
   @override
   Widget build(BuildContext context) {
     final stepper = CustomStepper(
-      steps: ['가는중', '탑승 완료'],
+      //가는중 탑승완료 이동중 도착완료 이렇게 Steps만드려고함
+
+      steps: ['가는중', '탑승 완료', '이동중', '도착완료'],
       currentStep: 1,
     );
     return Scaffold(

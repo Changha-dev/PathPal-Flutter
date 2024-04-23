@@ -14,6 +14,7 @@ import 'package:pathpal/widgets/build_image.dart';
 
 class VtRequestItems extends StatefulWidget {
   final category;
+
   const VtRequestItems({super.key, required this.category});
 
   @override
@@ -23,8 +24,22 @@ class VtRequestItems extends StatefulWidget {
 class _RequestItemsState extends State<VtRequestItems> {
   //현재 로그인 중인 사용자 id 가져오기
   final vtUid = FirebaseAuth.instance.currentUser!.uid;
+
   //디버그용
   // final vtUid = "vX4hHeFUvBPJJ03p6vFP9ItEsdy1";
+  int getServiceTime(DocumentSnapshot doc) {
+    try {
+      // 'service_time' 필드가 존재한다면 해당 값을 반환합니다.
+      // 존재하지 않을 경우, 아래의 catch 블록으로 이동합니다.
+      int serviceTime = doc['service_time'];
+      return serviceTime;
+    } catch (e) {
+      // 'service_time' 필드가 존재하지 않을 경우 여기서 처리합니다.
+      // 예를 들어, 기본값으로 0을 반환할 수 있습니다.
+      return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -38,47 +53,59 @@ class _RequestItemsState extends State<VtRequestItems> {
             return Center(
                 child: CircularProgressIndicator()); // 데이터가 로딩 중일 때 보여줄 위젯
           }
+
           return ListView.builder(
             itemCount: snapshot.data?.docs.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
               DocumentSnapshot item = snapshot.data!.docs[index];
               print(item['status']);
 
+              var serviceTime = getServiceTime(item);
+              // if (item['service_time'] != null) {
+              //   serviceTime = item['service_time'];
+              // }else{
+              //   serviceTime = 0;
+              // }
+
               Map<String, String> statusCarMap = {
                 'waiting': "접수완료 및 수락대기",
                 'going': "수락완료",
                 'boarding': "탑승완료",
+                'moving': "이동중",
+                "arriving": "도착완료"
               };
               Map<String, String> statusWalkMap = {
                 'waiting': "접수완료 및 수락대기",
                 'going': "수락완료",
                 'boarding': "미팅완료",
+                'moving': "이동중",
+                "arriving": "도착완료"
               };
               // Timestamp를 DateTime으로 변환
               DateTime departureTime =
-              (item['departure_time'] as Timestamp).toDate();
+                  (item['departure_time'] as Timestamp).toDate();
               // DateTime을 원하는 형식으로 포맷팅
               String formattedDepartureTime =
-              DateFormat('MM월 dd일 (E)').format(departureTime);
+                  DateFormat('MM월 dd일 (E)').format(departureTime);
 
               return Column(children: [
                 SizedBox(height: 15),
-                item['status'] != 'boarding'
+                item['status'] != 'arriving'
                     ? _buildNotBoardingItem(
-                    widget.category == 'car'
-                        ? statusCarMap[item['status']] ?? '가는중'
-                        : statusWalkMap[item['status']] ?? '가는중',
-                    formattedDepartureTime,
-                    item,
-                    context,
-                    widget.category)
+                        widget.category == 'car'
+                            ? statusCarMap[item['status']] ?? '이동중'
+                            : statusWalkMap[item['status']] ?? '이동중',
+                        formattedDepartureTime,
+                        item,
+                        context,
+                        widget.category)
                     : _buildBoardingItem(
-                    widget.category == 'car'
-                        ? statusCarMap[item['status']]!
-                        : statusWalkMap[item['status']]!,
-                    formattedDepartureTime,
-                    item,
-                    widget.category)
+                        widget.category == 'car'
+                            ? statusCarMap[item['status']]!
+                            : statusWalkMap[item['status']]!,
+                        formattedDepartureTime,
+                        item,
+                        widget.category, serviceTime)
               ]);
             },
           );
@@ -88,7 +115,7 @@ class _RequestItemsState extends State<VtRequestItems> {
 
 Widget _buildNotBoardingItem(String status, String formattedDepartureTime,
     DocumentSnapshot data, BuildContext context, String category) {
-  return  Container(
+  return Container(
       color: Colors.white,
       width: double.infinity,
       height: 150,
@@ -128,69 +155,65 @@ Widget _buildNotBoardingItem(String status, String formattedDepartureTime,
                         ),
                       ]),
                   SizedBox(height: 10),
-                  Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        BuildImage.buildImage(
-                            AppImages.circleIconImagePath),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Text(
-                          data['departure_address'],
-                          style: appTextTheme().bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ]),
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                    BuildImage.buildImage(AppImages.circleIconImagePath),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      data['departure_address'],
+                      style: appTextTheme().bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]),
                   category == 'car'
                       ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        BuildImage.buildImage(
-                            AppImages.redCircleIconImagePath),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Text(
-                          data['destination_address'] ?? '',
-                          style: appTextTheme().bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ])
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                              BuildImage.buildImage(
+                                  AppImages.redCircleIconImagePath),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                data['destination_address'] ?? '',
+                                style: appTextTheme().bodySmall,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ])
                       : Container()
                 ])),
         TextButton(
             onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VtProgress(
-                  arriveTime: FormatTime.formatTime(data['volunteer_time'].toDate()),
-                  carId: category == 'car' ? data.id : null,
-                  walkId: category != 'car' ? data.id : null,
-                  isWalkService: category != 'car',
-                ),
-              ),
-            ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.end, // 여기를 수정했습니다.
-                children: [
-                  Text(
-                    "진행상태 보기",
-                    style: appTextTheme()
-                        .bodyMedium!
-                        .copyWith(color: mainAccentColor),
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VtProgress(
+                      arriveTime: FormatTime.formatTime(
+                          data['volunteer_time'].toDate()),
+                      carId: category == 'car' ? data.id : null,
+                      walkId: category != 'car' ? data.id : null,
+                      isWalkService: category != 'car',
+                      currentStatus: data['status'],
+                    ),
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: mainAccentColor,
-                  )
-                ]))
+                ),
+            child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Text(
+                "진행상태 보기",
+                style:
+                    appTextTheme().bodyMedium!.copyWith(color: mainAccentColor),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: mainAccentColor,
+              )
+            ]))
       ]));
 }
 
 Widget _buildBoardingItem(String status, String formattedDepartureTime,
-    DocumentSnapshot data, String category) {
+    DocumentSnapshot data, String category, var serviceTime) {
   print("buildBoarding item");
 
   return Container(
@@ -206,61 +229,78 @@ Widget _buildBoardingItem(String status, String formattedDepartureTime,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          formattedDepartureTime,
-                          style: appTextTheme().bodyMedium,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        formattedDepartureTime,
+                        style: appTextTheme().bodyMedium,
+                      ),
+                      Spacer(), // 왼쪽 Text와 오른쪽 Container 사이를 최대한 띄웁니다.
+                      Container(
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: paleAccentColor,
+                          borderRadius: BorderRadius.circular(5),
                         ),
-                        Container(
-                          height: 24,
-                          decoration: BoxDecoration(
-                              color: paleAccentColor,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5), // 원하는 패딩을 추가
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                status,
-                                style: TextStyle(color: Colors.white),
-                              ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              serviceTime.toString() + "분",
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
-                      ]),
+                      ),
+                      SizedBox(width: 5), // 두 Container 사이의 간격
+                      Container(
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: paleAccentColor,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              status,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 10),
-                  Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        BuildImage.buildImage(AppImages.circleIconImagePath),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Text(
-                          data['departure_address'],
-                          style: appTextTheme().bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ]),
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                    BuildImage.buildImage(AppImages.circleIconImagePath),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      data['departure_address'],
+                      style: appTextTheme().bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]),
                   category == 'car'
                       ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        BuildImage.buildImage(
-                            AppImages.redCircleIconImagePath),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Text(
-                          data['destination_address'] ?? '',
-                          style: appTextTheme().bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ])
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                              BuildImage.buildImage(
+                                  AppImages.redCircleIconImagePath),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                data['destination_address'] ?? '',
+                                style: appTextTheme().bodySmall,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ])
                       : Container()
                 ])),
         Divider(height: 1, color: gray100),
@@ -274,7 +314,7 @@ Widget _buildBoardingItem(String status, String formattedDepartureTime,
                 return CircularProgressIndicator(); // 데이터가 로딩 중일 때 보여줄 위젯
               }
               Map<String, dynamic> vtData =
-              snapshot.data!.data() as Map<String, dynamic>;
+                  snapshot.data!.data() as Map<String, dynamic>;
               return Container(
                   color: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -296,13 +336,14 @@ Widget _buildBoardingItem(String status, String formattedDepartureTime,
                             //봉사자 정보
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     vtData['name'],
                                     style: appTextTheme().bodyMedium,
                                   ),
-                                 Text(
+                                  Text(
                                     vtData['email'],
                                     style: appTextTheme()
                                         .labelSmall!
@@ -314,7 +355,7 @@ Widget _buildBoardingItem(String status, String formattedDepartureTime,
                                           .where('req_id', isEqualTo: data.id)
                                           .snapshots(),
                                       builder: (context, snapshot) {
-                                        if(!snapshot.hasData){
+                                        if (!snapshot.hasData) {
                                           return SizedBox.shrink();
                                         }
                                         if (snapshot.data!.docs.isEmpty) {
@@ -323,38 +364,37 @@ Widget _buildBoardingItem(String status, String formattedDepartureTime,
                                         }
                                         return GestureDetector(
                                             onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      VtReview(data: data,)),
-                                            ),
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          VtReview(
+                                                            data: data,
+                                                          )),
+                                                ),
                                             child: Row(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .start, // 여기를 수정했습니다.
+                                                    MainAxisAlignment
+                                                        .start, // 여기를 수정했습니다.
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     "리뷰 확인하기",
                                                     style: appTextTheme()
                                                         .bodyMedium!
                                                         .copyWith(
-                                                        color:
-                                                        mainAccentColor),
+                                                            color:
+                                                                mainAccentColor),
                                                   ),
                                                   Icon(
                                                     Icons.chevron_right,
                                                     color: mainAccentColor,
                                                   )
                                                 ]));
-
                                       })
                                   //리뷰
                                 ])
-
                           ]),
-
                     ],
                   ));
             })

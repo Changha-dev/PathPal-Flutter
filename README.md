@@ -1,5 +1,4 @@
-# 2024 Google Solution Challenge
+# 2024 Hackathon to solve social problems
 
-A new Flutter project.
-
+Competition hosted by the Korean Policy Societyㅣ
 

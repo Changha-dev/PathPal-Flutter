@@ -105,7 +105,7 @@ class _CarDetailState extends State<CarDetail> {
                       .doc(widget.carSnapshot.id)
                       .update({'volunteer_time': selectedDate, 'vt_uid': widget.vtUid, 'status' : "going"})
                       .then((_) => Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => VtProgress(isWalkService: false, carId: widget.carSnapshot.id,arriveTime: FormatTime.formatTime(selectedDate) + " 도착 예정",)))
+                      builder: (context) => VtProgress(isWalkService: false, carId: widget.carSnapshot.id,arriveTime: FormatTime.formatTime(selectedDate) + " 도착 예정", currentStatus: "going",)))
                       .catchError((error) => print('Update failed: $error')));
                 },
               );

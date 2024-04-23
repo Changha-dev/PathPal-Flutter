@@ -86,6 +86,7 @@ class _WalkDetailState extends State<WalkDetail> {
                                         FormatTime.formatTime(selectedDate) +
                                             " 도착 예정",
                                     isWalkService: true,
+                                    currentStatus: "going",
                                   ))).catchError(
                           (error) => print('Update failed: $error')));
                 },

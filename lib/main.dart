@@ -42,12 +42,11 @@ class MyApp extends StatelessWidget {
           textTheme: appTextTheme(), //폰트 테마 적용
           useMaterial3: true,
         ),
-         home: DpLogin(),
+        home: DpLogin(),
         routes: {
           '/CarPage': (context) => CarPage(),
-          '/WalkPage': (context)=> WalkPage()
-          
-          }  //Disabled persion 로그인 화면
-        );
+          '/WalkPage': (context) => WalkPage()
+        } //Disabled persion 로그인 화면
+    );
   }
 }

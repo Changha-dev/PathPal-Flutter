@@ -44,12 +44,14 @@ class _RequestItemsState extends State<RequestItems> {
               Map<String, String> statusCarMap = {
                 'waiting': "접수완료 및 수락대기",
                 'going': "수락완료",
-                'boarding': "탑승완료",
+                'boarding': "이동중",
+                'arriving': '도착완료'
               };
               Map<String, String> statusWalkMap = {
                 'waiting': "접수완료 및 수락대기",
                 'going': "수락완료",
-                'boarding': "미팅완료",
+                'boarding': "이동중",
+                'arriving': "미팅완료"
               };
               // Timestamp를 DateTime으로 변환
               DateTime departureTime =
@@ -60,7 +62,7 @@ class _RequestItemsState extends State<RequestItems> {
 
               return Column(children: [
                 SizedBox(height: 15),
-                item['status'] != 'boarding'
+                item['status'] != 'arriving'
                     ? _buildNotBoardingItem(
                         widget.category == 'car'
                             ? statusCarMap[item['status']]!

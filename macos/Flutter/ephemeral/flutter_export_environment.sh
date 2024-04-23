@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Users\USER\flutter"
-export "FLUTTER_APPLICATION_PATH=C:\Users\USER\AndroidStudioProjects\pathpal"
+export "FLUTTER_ROOT=/opt/homebrew/Caskroom/flutter/3.16.7/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/changha/Documents/24-1-quarter/PathPal-Flutter"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
