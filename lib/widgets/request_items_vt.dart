@@ -42,11 +42,11 @@ class _RequestItemsState extends State<VtRequestItems> {
 
   @override
   Widget build(BuildContext context) {
+    print("category: ${widget.category}");
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection(widget.category == 'car' ? 'cars' : 'walks')
+            .collection(widget.category == 'car' ? 'cars' : (widget.category == 'walk' ? 'walks' : 'unknown_collection'))
             .where('vt_uid', isEqualTo: vtUid)
-            // .orderBy('departure_time', descending: true) // 출발 시간에 따라 최신순으로 정렬
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -61,12 +61,6 @@ class _RequestItemsState extends State<VtRequestItems> {
               print(item['status']);
 
               var serviceTime = getServiceTime(item);
-              // if (item['service_time'] != null) {
-              //   serviceTime = item['service_time'];
-              // }else{
-              //   serviceTime = 0;
-              // }
-
               Map<String, String> statusCarMap = {
                 'waiting': "접수완료 및 수락대기",
                 'going': "수락완료",
@@ -92,17 +86,17 @@ class _RequestItemsState extends State<VtRequestItems> {
                 SizedBox(height: 15),
                 item['status'] != 'arriving'
                     ? _buildNotBoardingItem(
-                        widget.category == 'car'
-                            ? statusCarMap[item['status']] ?? '이동중'
-                            : statusWalkMap[item['status']] ?? '이동중',
+                        widget.category == 'walk'
+                            ? statusWalkMap[item['status']] ?? '이동중'
+                            : statusCarMap[item['status']] ?? '이동중',
                         formattedDepartureTime,
                         item,
                         context,
                         widget.category)
                     : _buildBoardingItem(
-                        widget.category == 'car'
-                            ? statusCarMap[item['status']]!
-                            : statusWalkMap[item['status']]!,
+                        widget.category == 'walk'
+                            ? statusWalkMap[item['status']]!
+                            : statusCarMap[item['status']]!,
                         formattedDepartureTime,
                         item,
                         widget.category, serviceTime)

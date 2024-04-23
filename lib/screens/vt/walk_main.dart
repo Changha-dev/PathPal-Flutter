@@ -19,7 +19,8 @@ import '../../widgets/dp_info.dart';
 import '../../widgets/item_info_list.dart';
 
 class WalkMain extends StatefulWidget {
-  const WalkMain({super.key});
+  final String? vtUid;
+  const WalkMain({Key? key, required this.vtUid}) : super(key: key);
 
   @override
   State<WalkMain> createState() => _WalkMainState();
@@ -142,7 +143,7 @@ class _WalkMainState extends State<WalkMain> {
 
                   await Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => WalkDetail(
-                        vtUid: walk['dp_uid'] ?? '',
+                        vtUid: widget.vtUid ?? '',
                         markers: markers,
                         center: _center,
                         onMapCreated: (controller) {

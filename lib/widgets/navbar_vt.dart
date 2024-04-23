@@ -60,7 +60,7 @@ class _VtNavBarState extends State<VtNavBar> {
           index: selectedIndex,
           children: [
             CarMain(vtUid: widget.vtUid),
-            WalkMain(),
+            WalkMain(vtUid: widget.vtUid,),
             VtMyPage()
           ],
         ) ,
