@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -100,6 +103,7 @@ class DpLoginState extends State<DpLogin> {
 
                               if (userCredential != null && userCredential.user?.uid != null) {
                                 // 사용자가 새로운 사용자인 경우 회원가입 화면으로 이동
+                                await updateTokenAndNavigate(userCredential);
                                 bool response = await userService.checkDpUser(userCredential.user!.uid);
                                 print(response);
                                 if ( response == false) {
@@ -170,5 +174,36 @@ class DpLoginState extends State<DpLogin> {
         ),
       ),
     );
+  }
+
+  updateTokenAndNavigate(UserCredential userCredential) async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    // 토큰과 사용자 정보를 Firestore에 저장
+    await saveTokenToDatabase(token!, userCredential.user!.uid);
+
+    // 사용자의 로그인 상태에 따라 적절한 화면으로 이동
+    bool isNewUser = await userService.checkDpUser(userCredential.user!.uid);
+    if (isNewUser) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DpSignup(userCredential: userCredential)),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DpNavBar()),
+      );
+    }
+  }
+
+  saveTokenToDatabase(String token, String uid) async {
+    // 토큰과 사용자 UID를 사용하여 Firestore에 저장
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('disabledPerson').doc(uid).set({
+        'token': token,
+        'lastSeen': DateTime.now(),
+      }, SetOptions(merge: true)); // 기존 문서에 병합
+    }
   }
 }

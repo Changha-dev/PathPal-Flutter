@@ -1,3 +1,7 @@
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:pathpal/colors.dart';
 import 'package:pathpal/screens/dp/login.dart';
@@ -8,11 +12,18 @@ import '../../service/auth_service.dart';
 import '../../service/firestore/user_service.dart';
 import 'car_main.dart';
 
-class VtLogin extends StatelessWidget {
-  final authService = AuthService();
-  final userService = UserService();
+class VtLogin extends StatefulWidget {
 
   VtLogin({super.key});
+
+  @override
+  State<VtLogin> createState() => _VtLoginState();
+}
+
+class _VtLoginState extends State<VtLogin> {
+  final authService = AuthService();
+
+  final userService = UserService();
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +96,7 @@ class VtLogin extends StatelessWidget {
                                 await authService.signInWithGoogle();
 
                             if (userCredential != null) {
+                              await updateTokenAndNavigate(context, userCredential);
                               if (await userService
                                       .checkVtUser(userCredential.user!.uid) ==
                                   true) {
@@ -141,5 +153,36 @@ class VtLogin extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  updateTokenAndNavigate(BuildContext context, UserCredential userCredential) async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    // 토큰과 사용자 정보를 Firestore에 저장
+    await saveTokenToDatabase(token!, userCredential.user!.uid);
+
+    // 사용자의 로그인 상태에 따라 적절한 화면으로 이동
+    bool isNewUser = await userService.checkDpUser(userCredential.user!.uid);
+    if (isNewUser) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => VtSignUp(userCredential: userCredential)),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => VtNavBar(vtUid: userCredential.user!.uid)),
+      );
+    }
+  }
+
+  saveTokenToDatabase(String token, String uid) async {
+    // 토큰과 사용자 UID를 사용하여 Firestore에 저장
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('volunteers').doc(uid).set({
+        'token': token,
+        'lastSeen': DateTime.now(),
+      }, SetOptions(merge: true)); // 기존 문서에 병합
+    }
   }
 }
