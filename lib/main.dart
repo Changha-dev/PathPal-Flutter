@@ -27,10 +27,21 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   initializeDateFormatting().then((_) => runApp(MyApp()));
+  String? token = await FirebaseMessaging.instance.getToken();
+  print("token: $token");
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}");
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
